@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Contact Us - Masrur Cafe</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+
+        <h1 class="logo">Masrur Cafe</h1>
+
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/menu">Menu</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/contact">Contact</a></li>
+        </ul>
+
+    </nav>
+
+
+    <!-- Contact -->
+    <section class="contact">
+
+        <h2>Contact Us</h2>
+
+        <p>📞 Phone: 07XX XXX XXX</p>
+
+        <p>📱 WhatsApp: 07XX XXX XXX</p>
+
+        <p>📍 Location: Your Restaurant Location</p>
+
+        <p>📧 Email: info@masrurcafe.com</p>
+
+
+        <h3>Send Us a Message</h3>
+
+        <form>
+
+            <label>Name</label>
+            <input type="text"
+                   placeholder="Enter your name">
+
+
+            <label>Email</label>
+            <input type="email"
+                   placeholder="Enter your email">
+
+
+            <label>Message</label>
+            <textarea
+                placeholder="Write your message">
+            </textarea>
+
+
+            <button type="submit">
+                Send Message
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <footer>
+        <p>&copy; 2026 Masrur Cafe & Restaurant</p>
+    </footer>
+
+</body>
+</html>
