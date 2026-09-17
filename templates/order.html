@@ -1,0 +1,373 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Place Your Order</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: #222;
+            padding: 15px;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            color: orange;
+        }
+
+        /* Heading */
+        .heading {
+            text-align: center;
+            padding: 35px 20px;
+            background-color: orange;
+            color: white;
+        }
+
+        .heading h1 {
+            font-size: 35px;
+            margin-bottom: 10px;
+        }
+
+        /* Order container */
+        .order-container {
+            width: 90%;
+            max-width: 700px;
+            margin: 30px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+
+        .order-container h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Form */
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        /* Order item */
+        .food-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .food-item select {
+            flex: 2;
+        }
+
+        .food-item input {
+            flex: 1;
+        }
+
+        /* Add button */
+        .add-btn {
+            background-color: #444;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .add-btn:hover {
+            background-color: #666;
+        }
+
+        /* Total */
+        .total {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        /* Submit */
+        .submit-btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: orange;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background-color: darkorange;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            background-color: #222;
+            color: white;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+
+            nav a {
+                display: block;
+                margin: 8px;
+            }
+
+            .order-container {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .food-item {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="{{ url_for('menu') }}">Menu</a>
+        <a href="order.html">Order</a>
+        <a href="contact.html">Contact</a>
+    </nav>
+
+    <!-- Heading -->
+    <section class="heading">
+        <h1>Place Your Order</h1>
+        <p>Enjoy your favourite meals from our restaurant.</p>
+    </section>
+
+    <!-- Order Form -->
+    <div class="order-container">
+
+        <h2>Customer Details</h2>
+
+        <form id="orderForm">
+
+            <label for="name">Full Name</label>
+            <input
+                type="text"
+                id="name"
+                placeholder="Enter your full name"
+                required
+            >
+
+            <label for="phone">Phone Number</label>
+            <input
+                type="tel"
+                id="phone"
+                placeholder="e.g. 0712345678"
+                required
+            >
+
+            <label for="service">Order Type</label>
+            <select id="service" required>
+                <option value="">Select an option</option>
+                <option value="Delivery">Delivery</option>
+                <option value="Pickup">Pickup</option>
+            </select>
+
+            <label for="address">Delivery Address</label>
+            <input
+                type="text"
+                id="address"
+                placeholder="Enter your delivery address"
+            >
+
+            <h2 style="margin-top: 30px;">Select Your Food</h2>
+
+            <div class="food-item">
+
+                <select class="food" onchange="calculateTotal()">
+                    <option value="0">Select food</option>
+                    <option value="300">Chicken & Chips - KSh 300</option>
+                    <option value="250">Beef Burger - KSh 250</option>
+                    <option value="200">Chicken Burger - KSh 200</option>
+                    <option value="150">French Fries - KSh 150</option>
+                    <option value="350">Fried Chicken - KSh 350</option>
+                    <option value="200">Beef Samosa - KSh 200</option>
+                    <option value="250">Chicken Wings - KSh 250</option>
+                    <option value="100">Soda - KSh 100</option>
+                </select>
+
+                <input
+                    type="number"
+                    class="quantity"
+                    value="1"
+                    min="1"
+                    onchange="calculateTotal()"
+                >
+
+            </div>
+
+            <div id="extraItems"></div>
+
+            <button type="button" class="add-btn" onclick="addFoodItem()">
+                + Add Another Item
+            </button>
+
+            <label for="instructions">Special Instructions</label>
+            <textarea
+                id="instructions"
+                placeholder="Any special requests?">
+            </textarea>
+
+            <div class="total">
+                Total: KSh <span id="total">0</span>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                Place Order
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Our Restaurant. All Rights Reserved.</p>
+    </footer>
+
+
+    <script>
+
+        // Add another food item
+        function addFoodItem() {
+
+            const container = document.getElementById("extraItems");
+
+            const item = document.createElement("div");
+
+            item.className = "food-item";
+
+            item.innerHTML = `
+                <select class="food" onchange="calculateTotal()">
+                    <option value="0">Select food</option>
+                    <option value="300">Chicken & Chips - KSh 300</option>
+                    <option value="250">Beef Burger - KSh 250</option>
+                    <option value="200">Chicken Burger - KSh 200</option>
+                    <option value="150">French Fries - KSh 150</option>
+                    <option value="350">Fried Chicken - KSh 350</option>
+                    <option value="200">Beef Samosa - KSh 200</option>
+                    <option value="250">Chicken Wings - KSh 250</option>
+                    <option value="100">Soda - KSh 100</option>
+                </select>
+
+                <input
+                    type="number"
+                    class="quantity"
+                    value="1"
+                    min="1"
+                    onchange="calculateTotal()"
+                >
+            `;
+
+            container.appendChild(item);
+        }
+
+
+        // Calculate total price
+        function calculateTotal() {
+
+            const foods = document.querySelectorAll(".food");
+
+            const quantities = document.querySelectorAll(".quantity");
+
+            let total = 0;
+
+            for (let i = 0; i < foods.length; i++) {
+
+                const price = Number(foods[i].value);
+
+                const quantity = Number(quantities[i].value);
+
+                total += price * quantity;
+            }
+
+            document.getElementById("total").textContent = total;
+        }
+
+
+        // Submit order
+        document.getElementById("orderForm").addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            const name = document.getElementById("name").value;
+
+            const phone = document.getElementById("phone").value;
+
+            const total = document.getElementById("total").textContent;
+
+            alert(
+                "Thank you, " + name +
+                "! Your order has been received.\n\n" +
+                "Phone: " + phone +
+                "\nTotal: KSh " + total
+            );
+
+        });
+
+    </script>
+
+</body>
+</html>

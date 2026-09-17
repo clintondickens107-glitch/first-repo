@@ -1,4 +1,4 @@
-from flask import Flask,redirect,url_for,render_template
+from flask import Flask,redirect,url_for,render_template,request
 import sqlite3
 
 
@@ -19,6 +19,11 @@ def menu():
     return render_template('menu.html', menu_items=items)
 
 
+@app.route('/menu.html')
+def menu_html():
+    return redirect(url_for('menu'))
+
+
 @app.route('/')
 def home():
     return render_template('template.html')
@@ -31,6 +36,11 @@ def about():
 @app.route('/contact')
 def contact():
     return render_template('contact.html')
+
+
+@app.route('/order')
+def order():
+    return render_template('order.html', selected_food=request.args.get('food', ''))
 
 
 if __name__ == '__main__':

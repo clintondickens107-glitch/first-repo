@@ -16,11 +16,12 @@
     <!-- Navigation Bar -->
     <nav class="navbar">
 
-        <h1 class="logo">Masrur Cafe</h1>
+        <h1 class="logo">Dickens Cafe</h1>
 
         <ul>
             <li><a href="/">Home</a></li>
             <li><a href="/menu">Menu</a></li>
+            <li><a href="/order">Order</a></li>
             <li><a href="/about">About Us</a></li>
             <li><a href="/contact">Contact</a></li>
         </ul>
@@ -64,9 +65,10 @@
                 </h4>
 
                 <!-- Order Button -->
-                <button type="button">
+                <a class="button"
+                   href="{{ url_for('order', food=item['name']) }}">
                     Order
-                </button>
+                </a>
 
             </div>
 
@@ -81,7 +83,7 @@
     <footer>
 
         <p>
-            &copy; 2026 Masrur Cafe & Restaurant
+            &copy; 2026 Dickens Cafe & Restaurant
         </p>
 
     </footer>
