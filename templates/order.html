@@ -183,10 +183,10 @@
 
     <!-- Navigation -->
     <nav>
-        <a href="index.html">Home</a>
+        <a href="{{ url_for('home') }}">Home</a>
         <a href="{{ url_for('menu') }}">Menu</a>
-        <a href="order.html">Order</a>
-        <a href="contact.html">Contact</a>
+        <a href="{{ url_for('order') }}">Order</a>
+        <a href="{{ url_for('contact') }}">Contact</a>
     </nav>
 
     <!-- Heading -->
@@ -206,6 +206,7 @@
             <input
                 type="text"
                 id="name"
+                name="name"
                 placeholder="Enter your full name"
                 required
             >
@@ -214,12 +215,13 @@
             <input
                 type="tel"
                 id="phone"
+                name="phone"
                 placeholder="e.g. 0712345678"
                 required
             >
 
             <label for="service">Order Type</label>
-            <select id="service" required>
+            <select id="service" name="service" required>
                 <option value="">Select an option</option>
                 <option value="Delivery">Delivery</option>
                 <option value="Pickup">Pickup</option>
@@ -229,6 +231,7 @@
             <input
                 type="text"
                 id="address"
+                name="address"
                 placeholder="Enter your delivery address"
             >
 
@@ -237,15 +240,13 @@
             <div class="food-item">
 
                 <select class="food" onchange="calculateTotal()">
-                    <option value="0">Select food</option>
-                    <option value="300">Chicken & Chips - KSh 300</option>
-                    <option value="250">Beef Burger - KSh 250</option>
-                    <option value="200">Chicken Burger - KSh 200</option>
-                    <option value="150">French Fries - KSh 150</option>
-                    <option value="350">Fried Chicken - KSh 350</option>
-                    <option value="200">Beef Samosa - KSh 200</option>
-                    <option value="250">Chicken Wings - KSh 250</option>
-                    <option value="100">Soda - KSh 100</option>
+                    <option value="">Select food</option>
+                    {% for item in menu_items %}
+                    <option value="{{ item['id'] }}" data-price="{{ item['price'] }}"
+                        {% if item['name'] == selected_food %}selected{% endif %}>
+                        {{ item['name'] }} - KSh {{ item['price']|int }}
+                    </option>
+                    {% endfor %}
                 </select>
 
                 <input
@@ -267,6 +268,7 @@
             <label for="instructions">Special Instructions</label>
             <textarea
                 id="instructions"
+                name="instructions"
                 placeholder="Any special requests?">
             </textarea>
 
@@ -288,86 +290,7 @@
     </footer>
 
 
-    <script>
-
-        // Add another food item
-        function addFoodItem() {
-
-            const container = document.getElementById("extraItems");
-
-            const item = document.createElement("div");
-
-            item.className = "food-item";
-
-            item.innerHTML = `
-                <select class="food" onchange="calculateTotal()">
-                    <option value="0">Select food</option>
-                    <option value="300">Chicken & Chips - KSh 300</option>
-                    <option value="250">Beef Burger - KSh 250</option>
-                    <option value="200">Chicken Burger - KSh 200</option>
-                    <option value="150">French Fries - KSh 150</option>
-                    <option value="350">Fried Chicken - KSh 350</option>
-                    <option value="200">Beef Samosa - KSh 200</option>
-                    <option value="250">Chicken Wings - KSh 250</option>
-                    <option value="100">Soda - KSh 100</option>
-                </select>
-
-                <input
-                    type="number"
-                    class="quantity"
-                    value="1"
-                    min="1"
-                    onchange="calculateTotal()"
-                >
-            `;
-
-            container.appendChild(item);
-        }
-
-
-        // Calculate total price
-        function calculateTotal() {
-
-            const foods = document.querySelectorAll(".food");
-
-            const quantities = document.querySelectorAll(".quantity");
-
-            let total = 0;
-
-            for (let i = 0; i < foods.length; i++) {
-
-                const price = Number(foods[i].value);
-
-                const quantity = Number(quantities[i].value);
-
-                total += price * quantity;
-            }
-
-            document.getElementById("total").textContent = total;
-        }
-
-
-        // Submit order
-        document.getElementById("orderForm").addEventListener("submit", function(event) {
-
-            event.preventDefault();
-
-            const name = document.getElementById("name").value;
-
-            const phone = document.getElementById("phone").value;
-
-            const total = document.getElementById("total").textContent;
-
-            alert(
-                "Thank you, " + name +
-                "! Your order has been received.\n\n" +
-                "Phone: " + phone +
-                "\nTotal: KSh " + total
-            );
-
-        });
-
-    </script>
+    <script src="{{ url_for('static', filename='js/order.js') }}"></script>
 
 </body>
 </html>
