@@ -148,14 +148,97 @@ body {
 
 
 .welcome h2 {
-    margin-bottom: 20px;
+    color: #222;
+    font-size: 36px;
+    margin-bottom: 35px;
 }
 
 
-.welcome p {
-    margin-bottom: 25px;
+.menu-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 28px;
+    margin: 0 auto;
+    max-width: 1100px;
+    text-align: left;
+}
 
+
+.menu-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    padding-bottom: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+
+.menu-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+    transform: translateY(-4px);
+}
+
+
+.menu-card img {
+    display: block;
+    height: 210px;
+    object-fit: cover;
+    width: 100%;
+}
+
+
+.menu-card h3,
+.menu-card h4,
+.menu-card p {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+
+.menu-card h3 {
+    color: #222;
+    font-size: 21px;
+    margin-bottom: 8px;
+    margin-top: 18px;
+}
+
+
+.menu-card .category {
+    color: darkorange;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+
+.menu-card p {
     line-height: 1.6;
+}
+
+
+.menu-card h4 {
+    color: #222;
+    font-size: 18px;
+    margin-bottom: 16px;
+}
+
+
+.menu-card button {
+    background-color: orange;
+    border: 0;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 11px 22px;
+    margin-left: 20px;
+}
+
+
+.menu-card button:hover {
+    background-color: darkorange;
 }
 
 
@@ -188,6 +271,14 @@ footer {
 
     .info {
         flex-direction: column;
+    }
+
+    .welcome {
+        padding: 40px 8%;
+    }
+
+    .welcome h2 {
+        font-size: 30px;
     }
 
     .hero-content h2 {
