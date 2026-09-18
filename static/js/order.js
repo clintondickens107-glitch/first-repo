@@ -19,6 +19,7 @@ function addFoodItem() {
     `;
 
     container.appendChild(item);
+    calculateTotal();
 }
 
 
@@ -29,12 +30,17 @@ function calculateTotal() {
     let total = 0;
 
     for (let i = 0; i < foods.length; i++) {
-        const price = Number(foods[i].selectedOptions[0]?.dataset.price || 0);
-        const quantity = Number(quantities[i].value);
+        const selectedOption = foods[i].selectedOptions[0];
+        const rawPrice = selectedOption ? selectedOption.getAttribute("data-price") : null;
+        const price = Number(rawPrice) || 0;
+        const quantity = Number(quantities[i]?.value || 0);
         total += price * quantity;
     }
 
-    document.getElementById("total").textContent = total;
+    const totalElement = document.getElementById("total");
+    if (totalElement) {
+        totalElement.textContent = total;
+    }
 }
 
 
@@ -69,7 +75,5 @@ document.getElementById("orderForm").addEventListener("submit", async function (
         return;
     }
 
-    alert(result.message + "\nOrder number: " + result.order_id);
-    event.target.reset();
-    document.getElementById("total").textContent = "0";
+    window.location.href = `/order/confirmation/${result.order_id}`;
 });

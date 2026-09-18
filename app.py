@@ -6,6 +6,18 @@ import sqlite3
 app=Flask(__name__)
 
 
+def ensure_database_schema():
+    conn = sqlite3.connect('database.db')
+    columns = [row[1] for row in conn.execute('PRAGMA table_info(orders)').fetchall()]
+    if 'order_type' not in columns:
+        conn.execute("ALTER TABLE orders ADD COLUMN order_type TEXT DEFAULT 'Delivery'")
+        conn.commit()
+    conn.close()
+
+
+ensure_database_schema()
+
+
 def get_db_connection():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
@@ -48,6 +60,7 @@ def order():
         phone = str(data.get('phone', '')).strip()
         address = str(data.get('address', '')).strip()
         instructions = str(data.get('instructions', '')).strip()
+        order_type = str(data.get('service', 'Delivery')).strip() or 'Delivery'
 
         try:
             requested_items = data.get('items', [])
@@ -84,9 +97,9 @@ def order():
         )
         cursor = conn.execute(
             '''INSERT INTO orders
-               (customer_name, phone, address, instructions, quantity, total_price)
-               VALUES (?, ?, ?, ?, ?, ?)''',
-            (customer_name, phone, address, instructions, quantity, total_price)
+               (customer_name, phone, address, instructions, quantity, total_price, order_type)
+               VALUES (?, ?, ?, ?, ?, ?, ?)''',
+            (customer_name, phone, address, instructions, quantity, total_price, order_type)
         )
         order_id = cursor.lastrowid
         conn.executemany(
@@ -114,6 +127,148 @@ def order():
         selected_food=request.args.get('food', '')
     )
 
+
+@app.route("/admin/orders")
+def admin_orders():
+    conn = sqlite3.connect("database.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM orders
+        ORDER BY order_id DESC
+    """)
+
+    orders = cursor.fetchall()
+
+    conn.close()
+
+    return render_template("admin_orders.html", orders=orders)
+
+
+@app.route("/admin/orders/<int:order_id>/status", methods=["POST"])
+def update_order_status(order_id):
+    status = request.form.get("status")
+    allowed_statuses = ["Pending", "Preparing", "Ready", "Completed"]
+
+    if status not in allowed_statuses:
+        return {"error": "Invalid order status"}, 400
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "UPDATE orders SET order_status = ? WHERE order_id = ?",
+        (status, order_id),
+    )
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('admin_orders'))
+
+
+@app.route("/order/confirmation/<int:order_id>")
+def order_confirmation(order_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM orders
+        WHERE order_id = ?
+    """, (order_id,))
+
+    order = cursor.fetchone()
+    conn.close()
+
+    if order is None:
+        return "Order not found", 404
+
+    return render_template("confirmation.html", order=order)
+
+
+@app.route("/orders/confirmation/<int:order_id>")
+def orders_confirmation(order_id):
+    return order_confirmation(order_id)
+
+@app.route("/track-order", methods=["GET", "POST"])
+@app.route("/track_order", methods=["GET", "POST"])
+def track_order():
+    order = None
+    error = None
+
+    if request.method == "POST":
+        order_id = request.form.get("order_id", "").strip()
+        phone = request.form.get("phone", "").strip()
+
+        if order_id:
+            try:
+                order_id = int(order_id)
+            except ValueError:
+                error = "Please enter a valid order number."
+            else:
+                conn = get_db_connection()
+                order = conn.execute(
+                    "SELECT * FROM orders WHERE order_id = ?",
+                    (order_id,),
+                ).fetchone()
+                conn.close()
+
+                if order is None:
+                    error = "Order not found. Please check your order number."
+        elif phone:
+            conn = get_db_connection()
+            order = conn.execute(
+                "SELECT * FROM orders WHERE phone = ? ORDER BY order_id DESC LIMIT 1",
+                (phone,),
+            ).fetchone()
+            conn.close()
+
+            if order is None:
+                error = "No order found for this phone number."
+        else:
+            error = "Please enter either an order number or a phone number."
+
+    return render_template(
+        "track_order.html",
+        order=order,
+        error=error
+    )
+
+
+
+@app.route("/admin/dashboard")
+def admin_dashboard():
+    conn = sqlite3.connect("database.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) FROM orders")
+    total_orders = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM orders WHERE order_status = 'Pending' OR order_status IS NULL")
+    pending_orders = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM orders WHERE order_status = 'Preparing'")
+    preparing_orders = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM orders WHERE order_status = 'Completed'")
+    completed_orders = cursor.fetchone()[0]
+
+    cursor.execute("SELECT * FROM orders ORDER BY order_id DESC LIMIT 10")
+    recent_orders = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "admin_dashboard.html",
+        total_orders=total_orders,
+        pending_orders=pending_orders,
+        preparing_orders=preparing_orders,
+        completed_orders=completed_orders,
+        recent_orders=recent_orders
+    )
 
 if __name__ == '__main__':
     app.run(debug=True)
